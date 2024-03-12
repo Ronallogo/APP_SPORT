@@ -1,13 +1,13 @@
-const appModel = require('../model/app.person.model');
+const appModelPerson = require('../model/app.person.model');
 const connectDB = require("../../config/db.js");
 const {getInformationPerson, editInformationPerson} = require('../controllers/app.person.function')
 
 ////                           REGISTER A PERSON          ////////////
 module.exports.postPerson = async (req , res) => {
-    if (req.body.name_person && req.body.birth_person && req.body.nation) {
+    if (req.body.name_person && req.body.birth_person && req.body.nation || req.body.nature_person) {
 
              
-            const person =  new appModel.PERSON(req.body.name_person , req.body.birth_person, req.body.nation);
+            const person =  new appModelPerson.PERSON(req.body.name_person , req.body.birth_person, req.body.nation ,req.body.nature_person);
             await person.setPersonInformation();
             res.status(200).json(JSON.stringify(person));
             delete person;
@@ -29,7 +29,7 @@ module.exports.getPerson = async (req , res) =>{
     
     if(req.body.name_person){
          
-        res.status(200).json(data);
+        res.status(200).json({message : "GET_PERSON_SUCCEEDED "});
     }
     else{
         res.status(500).json({message :`ERROR_GET_PERSON : contains : ${req.body.name_person} ${data}`});

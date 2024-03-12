@@ -1,84 +1,65 @@
 const connectDB = require("../../config/db.js");
+const {valueReturned, simpleRequest} = require('../../tools_functions/app.tools.fonctions.js')
 
 class   PERSON{
-
-    constructor(name, birthday , nationality ){
+    /**
+     * 
+     * @param {string} name 
+     * @param {string} birthday 
+     * @param {string} nationality 
+     * @param {string} nature 
+     */
+    
+    constructor(name, birthday , nationality ,nature){
         this._name = name || null;
-        this._nationality = nationality|| null;
-        let test = new Date(birthday)|| null;
-        this._birthday = (test == null)? null : birthday;
-        }
 
+        this._nationality = nationality|| null;
+
+        let test = new Date(birthday)|| null;
+
+        this._birthday =  (test instanceof Date)?   birthday : null;
+
+        this._nature = (nature in ['referee' , 'player'])? nature:  null;
+      
+        }
+    /**
+     * 
+     * @param {string} type 
+     */
      
-    setPersonInformation(){
+    setPersonInformation(type){
         //let x = "INSERT INTO `person_tab` (`_id`, `_person_name`, `_birth_person`, `_nation_person`) VALUES (NULL, 'RON', '20/08/2001', 'GABON')"
        /**
         * PREPARATION DE LA REQUETE SQL
         */
-       const query = "INSERT INTO `person_tab` (`_id`, `_person_name`, `_birth_person`, `_nation_person`) VALUES" +`(NULL, '${this._name}', '${this._birthday}' , '${this._nationality}')` ;
-        /**
-         * param {ma requete et le callback en cas d erreur}
-         *  */    
-        connectDB.query(query , (err , res)=>{
-            if(err){
-                console.log('THIS IS THE ERROR_ :' + err);
-                return;
-            }
-            else{
-                console.log('QUERY_SUCCEEEDED!!!!');
-            }
-        });
+        this._nature = (type.toLocaleLowerCase() in ['player' , 'referee'])? type : null ;
+        const values = `VALUES (NULL, "${this._name}", "${this._birthday}" , '${this._nationality}' , '${type}')`
+        const query = "INSERT INTO `person_tab` (`_id`, `_person_name`, `_birth_person`, `_nation_person` , `_nature_person`) " + values ;
+        simpleRequest(query , 'setPersonInformation');
              
 
     }
+     
 
-    getNamePerson(info){
-        
-        return {
-            name  : this._name,
-            birthday : this._birthday ,
-            nationality : this._nationality
-        } 
-        
+    async getIdByNamePerson(name){
+
+        try {
+            const queries =  "SELECT  person_tab._id FROM `person_tab` WHERE person_tab._person_name =  "+`'${name}'`; 
+            const rows = await valueReturned(queries);
+            return rows ;
+        } catch (error) {
+            console.log(error);
+        }
+
+       
+
     }
+    
+  
+    
     
 } 
-/**
- * @extends {PERSON} PLAYER
- */
 
-class PLAYER extends PERSON {
-    STATE = {
-        good : 'GOOD',
-        normal : 'NORMAL',
-        sick : 'SICK'
-    }
-    constructor( weight , post) {
-        this._weight = weight;
-        this._post = post;
-        this._state = 'GOOD';
-    }
-    get infoPlayer(){
-        return {
-            '':this.infoPerson() ,
-            weight : this._weight,
-            post :this._post
-
-        }
-    }
-
-    get statePlayer(){
-        return this._state;
-    }
-    /**
-     * @param {string} state
-     */
-    set state(state){
-       this._state =  (state.toLocaleUpperCase() in this.STATE) ?  state : this._state
-    }
-    
-    
-};
  
    class TEAM {
     /**
@@ -151,10 +132,4 @@ class MATCH {
     }
 }
 
-module.exports = {
-    PERSON , 
-    PLAYER , 
-    TEAM,
-    CHAMPIONNAT,
-    REFEREE
-} ;
+module.exports = {PERSON};

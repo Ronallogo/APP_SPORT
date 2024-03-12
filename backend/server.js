@@ -10,7 +10,9 @@ app.use(express.json());
 app.use(express.urlencoded({extended :false}));
 
 
-app.use("/app/person" , require("./person/router/app.person.routes.js"));
+app.use("/app/person" , require("./person/routes/app.person.routes.js"));
+
+app.use("/app/player" , require('./player/routes/app.player.routes.js'))
 
  
 
