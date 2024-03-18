@@ -1,5 +1,5 @@
 const connectDB = require("../../config/db.js");
-const {valueReturned, simpleRequest} = require('../../tools_functions/app.tools.fonctions.js')
+const {valueReturned, simpleRequest, ifElementisIn} = require('../../tools_functions/app.tools.fonctions.js')
 
 class   PERSON{
     /**
@@ -31,8 +31,10 @@ class   PERSON{
         //let x = "INSERT INTO `person_tab` (`_id`, `_person_name`, `_birth_person`, `_nation_person`) VALUES (NULL, 'RON', '20/08/2001', 'GABON')"
        /**
         * PREPARATION DE LA REQUETE SQL
+        * 
         */
-        this._nature = (type.toLocaleLowerCase() in ['player' , 'referee'])? type : null ;
+        const nature = { player:'player' ,referee: 'referee'}
+        this._nature = ifElementisIn(nature , type);
         const values = `VALUES (NULL, "${this._name}", "${this._birthday}" , '${this._nationality}' , '${type}')`
         const query = "INSERT INTO `person_tab` (`_id`, `_person_name`, `_birth_person`, `_nation_person` , `_nature_person`) " + values ;
         simpleRequest(query , 'setPersonInformation');
@@ -61,23 +63,7 @@ class   PERSON{
 } 
 
  
-   class TEAM {
-    /**
-     * 
-     * @param {string} name 
-   
-     */
-    constructor(name ){
-        this._name = name;
-        this._pointEarned = 0,
-        this._pointRetired = 0,
-        this.positionSeason = 0,
-        this._point = 0
-    }
-    
-
-};
-
+ 
 
 
 class CHAMPIONNAT{

@@ -1,6 +1,6 @@
 const connectDB = require("../../config/db.js");
 const appModel = require('../../person/model/app.person.model.js');
-const { simpleRequest } = require("../../tools_functions/app.tools.fonctions.js");
+const { simpleRequest, searchId , searchAllId, ifIdExist } = require("../../tools_functions/app.tools.fonctions.js");
 
 /**
  * @extends {appModel.PERSON} PLAYER
@@ -15,8 +15,9 @@ class PLAYER extends appModel.PERSON {
      * @param {string} nation 
      * @param {number} weight 
      * @param {string} post 
+     * @param {number} team
      */
-    constructor(name , birth , nation , weight , height , post , state) {
+    constructor(name , birth , nation , weight , height , team , state , post) {
         super();
         this._name = name;
         this._birthday = birth;
@@ -25,35 +26,35 @@ class PLAYER extends appModel.PERSON {
         this._height = height ;
         this._post = post;
         this._state = state || 'GOOD';
+        this._team = team
         
     }
     async setPlayerInformation(){
 //////////       AFTER CREATION OF THIS OBJECT THIS FONCTION SEND FIRST THE INFORMATION IN THE PERSON_TAB   ///////////
-           this.setPersonInformation('player');
-/////          TAKE ID OF THIS PERSON AS FOREIGN_KEY
-            const _person_ = await this.getIdByNamePerson(this._name);
-           
-           // console.log('id recupérée '+   _person_[0]._id );
-            /////INSERT INTO `player_tab` (`_id`, `_person_`, `_weight_player`, `_post_player`) VALUES (NULL, '55', '150', 'AF');
-
-/////              CUT THE REQUEST IN TWO PARTS ///////////////
-
-            const values  = `VALUES  (NULL ,'${_person_[0]._id}' , '${this._weight}' ,' ${this._height}' , '${this._post}' , '${this._state}')` ;
-            const query = 'INSERT INTO `player_tab` ( _id ,_person_ , _weight_player ,_height_player  , _post_player , _state_player ) '+ values;
-            console.log(query);
-/////      SEND THE REQUEST IN TH PLAYER_TAB   /////////////
-            simpleRequest(query , 'setPlayerInformation');
+        try {
+            this.setPersonInformation('player');
+            /////          TAKE ID OF THIS PERSON AS FOREIGN_KEY
+                        const _person_ = await this.getIdByNamePerson(this._name);
+                       
+            //////    VERIFIACTION IF THIS ID TEAM EXIST OR NOT
+                        const TeamIdGathered = await searchAllId('team');
+                        this._team =   ifIdExist(TeamIdGathered , this._team);
+                        //console.log(this._team);
+                         
+                        
+            /////         CUT THE REQUEST IN TWO PARTS ///////////////
+            
+                        const values  = `VALUES  (NULL ,'${_person_[0]._id}' , '${this._weight}' ,' ${this._height}' ,'${this._state}' ,'${this._post}'  , '${this._team}')` ;
+                        const query = 'INSERT INTO `player_tab` ( _id ,_person_ , _weight_player ,_height_player  , _state_player  ,_post_player ,  _team_player) '+ values;
+                        console.log(query);
+            /////      SEND THE REQUEST IN TH PLAYER_TAB   /////////////
+                        simpleRequest(query , 'setPlayerInformation');
+        } catch (error) {
+            console.log(error);
+        }
      }
 
-    get statePlayer(){
-        return this._state;
-    }
-    /**
-     * @param {string} state
-     */
-    set state(state){
-       this._state =  (state.toLocaleUpperCase() in this.STATE) ?  state : this._state
-    }
+    
     
     
 };

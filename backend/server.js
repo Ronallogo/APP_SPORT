@@ -14,7 +14,7 @@ app.use("/app/person" , require("./person/routes/app.person.routes.js"));
 
 app.use("/app/player" , require('./player/routes/app.player.routes.js'))
 
- 
+app.use("/app/team" , require('./team/routes/app.team.route.js'))
 
 ///routes 
  

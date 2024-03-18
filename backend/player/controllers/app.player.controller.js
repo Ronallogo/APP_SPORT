@@ -11,11 +11,13 @@ module.exports.postPlayer = async (req , res) => {
         weight : req.body.weight_player,
         height : req.body.height_player,
         post : req.body.post_player,
-        state : req.body.state_player
+        state : req.body.state_player,
+        team : req.body.team_player,
+
     }
     /////     ***CHECKING IF ALL PARAMETERS ARE FILLED***    ///////////
 
-    if (dPlayer['name'] && dPlayer["birth"] && dPlayer["nation"] && dPlayer['post'] && dPlayer['state'] && dPlayer['weight'] && dPlayer['height']) {
+    if (dPlayer['name'] && dPlayer["birth"] && dPlayer["nation"] && dPlayer['post'] && dPlayer['team'] && dPlayer['weight'] && dPlayer['height']) {
 
 ////////////          PLAYER OBJECT CREATION THROUGH THE CONST appModelPlayer    ////////////////
             const player =  new appModelPlayer.PLAYER(
@@ -24,8 +26,9 @@ module.exports.postPlayer = async (req , res) => {
                 dPlayer['nation'],
                 dPlayer['weight'],
                 dPlayer['height'],
-                dPlayer['post'],
-                dPlayer['state']
+                dPlayer['team'],
+                dPlayer['state'],
+                dPlayer['post']
                
 
             );
@@ -45,8 +48,11 @@ module.exports.postPlayer = async (req , res) => {
 
 
 module.exports.getPlayer = async (req , res)=>{
+////// OBTENIR SOIT  ID OU NOM DU PLAYER ////////
     if(req.body.id_player || req.body.name_player){
+        /////  *** FONCTION RETOURNERA LE JOUEUR INDEXÉ *** ////
         const indexedPlayer = await getInformationPlayer(req.body.id_player || req.body.name_player);
+        ///// VERIFIATION EN CASE DE RETOUR NULL 
         (!indexedPlayer)? res.status(500).json({message:'PLAYER_NOT_FOUND'}) :   res.status(200).json(indexedPlayer);
       
     }
@@ -56,13 +62,17 @@ module.exports.getPlayer = async (req , res)=>{
 }
 
 module.exports.editPlayer = async (req , res) =>{
+
+
+
     if(req.body.id_person &&  req.body.new_data &&  req.body.name_data){
-        console.log('inside_1');
+      ////  RECUPERATION DES DONNÉES DE L UTILISATEUR EN CREANT UN OBJET dPLAYER
         const dPlayer = {
             id : req.body.id_person,
             new_data : req.body.new_data,
             name_data : req.body.name_data
         }
+        /////modification de la données indexée
         await editInformationPlayer(dPlayer['id'] , dPlayer['new_data']  , dPlayer['name_data'] );
         res.status(200).json({message : 'EDITATION_PLAYER_SUCCEEDED  !!!!'});
     }

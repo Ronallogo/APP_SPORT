@@ -7,7 +7,7 @@ const { valueReturned, simpleRequest } = require("../../tools_functions/app.tool
 //////    ***FONCTION POUR RECUPERER TOUTES LES INFORMATION COMBINÉES D' UN PLAYER ***      ///////
 module.exports.getInformationPlayer = async (info_player) =>{
     /////////  PREMIERE PARTIE DE LA  REQUETE   /////////
-    let querie = "SELECT person_tab._person_name , person_tab._nation_person , player_tab._weight_player , player_tab._height_player , player_tab._post_player , player_tab._state_player FROM `person_tab` ";
+    let querie = "SELECT person_tab._person_name , person_tab._nation_person , player_tab._weight_player , player_tab._height_player , player_tab._post_player , player_tab._state_player , player_tab._team_player FROM `person_tab` ";
     
     
     /**
@@ -21,7 +21,7 @@ module.exports.getInformationPlayer = async (info_player) =>{
         try {
             if(typeof JSON.parse(info_player) == 'number'){
 
-                const innerJoinForId = "INNER JOIN `player_tab` ON player_tab._person_ = person_tab._id AND person_tab._id =  " + `${info_player} ;`
+                const innerJoinForId = "INNER JOIN `player_tab` ON player_tab._person_ = person_tab._id AND player_tab._id =  " + `${info_player} ;`
                 querie +=innerJoinForId  ;
             }
         } catch (error) {
@@ -43,10 +43,13 @@ module.exports.getInformationPlayer = async (info_player) =>{
                 weight : result[0]._weight_player ,
                 height : result[0]._height_player,
                 post : result[0]._post_player ,
-                state : result[0]._state_player
+                state : result[0]._state_player,
+                team : result[0]._team_player
+                
         
             }
             return objectReleased ;
+            
         } catch (error) {
             console.log(error);
             console.log("\n CAUSE : PLAYER_NOT_FOUND");
@@ -74,7 +77,7 @@ module.exports.editInformationPlayer = async (person_id  , new_info_player , nam
     let queries = '';
      
     const typeInformationSet_1 = {name :'name' , birth :'birth' ,nation : 'nation'};
-    const typeInformationSet_2 = {height : 'height' , weight : 'weight' , post :'post' ,state : 'state'}
+    const typeInformationSet_2 = {height : 'height' , weight : 'weight' , post :'post' ,state : 'state' , team : 'team'}
     
     
   //  console.log(name_info in typeInformationSet_1);
@@ -87,7 +90,7 @@ module.exports.editInformationPlayer = async (person_id  , new_info_player , nam
         editInformationPerson(person_id , new_info_player , name_info);
     }
     else if(name_info in typeInformationSet_2){
-        console.log('inside_4');
+       console.log('inside_4');
         switch (name_info) {
 
             case "height":
@@ -109,13 +112,16 @@ module.exports.editInformationPlayer = async (person_id  , new_info_player , nam
                 queries = "UPDATE  `player_tab` SET player_tab._state_player =  "+`'${new_info_player}' WHERE player_tab._person_ = '${person_id}'  `;
 
                 break;
+            case "team":
+                queries = "UPDATE  `player_tab` SET player_tab._team_player =  "+`'${new_info_player}' WHERE player_tab._person_ = '${person_id}'  `; 
+                break;
             default:
                 console.log('WRONG_KEY_TO_PLAYER');
                 break;
         }
     
         console.log(queries);
-        await simpleRequest(queries , 'editInformationPerson')
+        await simpleRequest(queries , 'editInformationPerson');
         
         
         
